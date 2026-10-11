@@ -1,0 +1,10 @@
+*.apk
+*.ap_
+obj/
+dexout/
+gen/
+res.zip
+ort/x/
+nativelib/
+debug.keystore
+*.class

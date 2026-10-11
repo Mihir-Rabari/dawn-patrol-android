@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="dev.mihir.dawnpatrol">
+
+    <!-- RECORD_AUDIO: the entire point — listen for birds. Audio never leaves the device. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- SCHEDULE_EXACT_ALARM: the alarm must fire at the minute you set, not "eventually" -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- VIBRATE + WAKE_LOCK: the ring itself -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- POST_NOTIFICATIONS: full-screen alarm notification on Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- USE_FULL_SCREEN_INTENT: launch the ring screen over the lockscreen -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- No INTERNET permission. Nothing in this app can phone home — that is the point. -->
+
+    <uses-feature android:name="android.hardware.microphone" android:required="true" />
+
+    <application
+        android:name=".App"
+        android:label="Dawn Patrol"
+        android:icon="@mipmap/ic_launcher"
+        android:extractNativeLibs="true"
+        android:theme="@android:style/Theme.Material.NoActionBar">
+
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- shows over the lockscreen, turns the screen on -->
+        <activity android:name=".RingActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true" />
+
+        <receiver android:name=".AlarmReceiver" android:exported="false" />
+    </application>
+</manifest>
