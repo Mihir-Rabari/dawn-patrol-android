@@ -39,7 +39,7 @@ if [ ! -s "ort/$ORT_AAR" ]; then
   curl -sL --fail --retry 3 -o "ort/$ORT_AAR" "$ORT_URL"
 fi
 rm -rf ort/x && mkdir -p ort/x
-(cd ort/x && unzip -q "../$ORT_AAR")
+(cd ort/x && python3 -m zipfile -e "../$ORT_AAR" .)
 cp ort/x/classes.jar ort/classes.jar
 # arm64-v8a only: every modern phone. (x86 emulators will not run the model —
 # documented in README; real devices are the target.)
@@ -67,10 +67,22 @@ javac -source 11 -target 11 -classpath "$PLATFORM:ort/classes.jar" -d obj \
 
 # ---------------------------------------------------------------- pack
 BUILD_DIR="$(pwd)"
-(cd dexout && zip -q "$BUILD_DIR/unsigned.apk" classes.dex)
-# zip from app/src/main (NOT from inside assets/) so entries land at assets/…
-(cd app/src/main && zip -qr "$BUILD_DIR/unsigned.apk" assets)
-(cd nativelib && zip -qr "$BUILD_DIR/unsigned.apk" lib)
+python3 - "$BUILD_DIR" << 'PYEOF'
+import sys, os, zipfile
+build = sys.argv[1]
+apk = os.path.join(build, 'unsigned.apk')
+with zipfile.ZipFile(apk, 'a', zipfile.ZIP_DEFLATED) as z:
+    z.write(os.path.join(build, 'dexout', 'classes.dex'), 'classes.dex')
+    # entries must land at assets/… and lib/… (zip from the CONTENTS, not the
+    # parent dir — zipping from inside assets/ puts them at the APK root)
+    for base, arc in [('app/src/main/assets', 'assets'), ('nativelib/lib', 'lib')]:
+        for root, _, files in os.walk(base):
+            for f in files:
+                full = os.path.join(root, f)
+                arcname = os.path.join(arc, os.path.relpath(full, base))
+                z.write(full, arcname)
+print('packed: dex + assets + lib into unsigned.apk')
+PYEOF
 
 "$BT/zipalign" -f 4 unsigned.apk aligned.apk
 

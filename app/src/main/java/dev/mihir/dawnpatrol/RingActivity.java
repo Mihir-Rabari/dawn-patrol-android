@@ -25,7 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.annotation.NonNull;
+import android.annotation.SuppressLint;
+import android.view.WindowManager;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ public class RingActivity extends Activity {
     private float birdSeconds = 0f;
     private long ringStart = 0;
     private String mode = "live";
+    private boolean testMode = false;
     private boolean demoRunning = false;
     private float[] demoPcm = null;
     private int demoPos = 0;
@@ -73,10 +75,11 @@ public class RingActivity extends Activity {
         try {
             store = new Store(this);
             Window w = getWindow();
-            w.addFlags(Window.FLAG_SHOW_WHEN_LOCKED
-                    | Window.FLAG_TURN_SCREEN_ON
-                    | Window.FLAG_KEEP_SCREEN_ON);
+            w.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                    | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                    | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             setContentView(buildUi());
+            testMode = getIntent().getBooleanExtra("test", false);
             startAlarmSound();
             ringStart = System.currentTimeMillis();
             // warm the model ~2 s after first frame (16 MB copy + session create)
@@ -252,8 +255,7 @@ public class RingActivity extends Activity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] perms,
-                                            @NonNull int[] results) {
+    public void onRequestPermissionsResult(int requestCode, String[] perms, int[] results) {
         if (requestCode != MIC_REQUEST) return;
         if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
             beginLiveListening();
@@ -461,7 +463,9 @@ public class RingActivity extends Activity {
             entry.censusJson = "{}";
         }
         store.saveEntry(entry);
-        store.disarm();
+        if (!testMode) {
+            store.disarm();
+        }
         showOnly(victoryViews);
     }
 
@@ -483,7 +487,9 @@ public class RingActivity extends Activity {
         entry.conceded = true;
         entry.censusJson = "{}";
         store.saveEntry(entry);
-        store.disarm();
+        if (!testMode) {
+            store.disarm();
+        }
         finished = true;
         startActivity(new Intent(this, MainActivity.class));
         finish();

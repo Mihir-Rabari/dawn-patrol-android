@@ -36,7 +36,7 @@ public class AudioThread {
     public synchronized void start() throws Exception {
         if (running) return;
         int min = AudioRecord.getMinBufferSize(Classifier.SR,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16);
+                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
         int bufSize = Math.max(min, 8192) * 2;
 
         record = trySource(MediaRecorder.AudioSource.UNPROCESSED, bufSize);
@@ -64,7 +64,7 @@ public class AudioThread {
     private AudioRecord trySource(int source, int bufSize) {
         try {
             AudioRecord r = new AudioRecord(source, Classifier.SR,
-                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16, bufSize);
+                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufSize);
             if (r.getState() == AudioRecord.STATE_INITIALIZED) return r;
             r.release();
         } catch (Exception ignored) {
