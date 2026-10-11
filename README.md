@@ -3,8 +3,8 @@
 The alarm clock that **only stops for real birdsong**.
 
 Set an alarm. When it rings, there is no snooze button — the only way to
-dismiss it is to take your phone **outside** and let it listen. A 4 MB
-open-weight audio model (**YAMNet**, Apache-2.0, Google Research) runs
+dismiss it is to take your phone **outside** and let it listen. A 16 MB
+open-weight model (**YAMNet**, Apache-2.0, Google Research) runs
 **entirely on the phone** via ONNX Runtime and decides whether the birds
 vouched for you. Every morning ends in a dawn census in your field journal.
 
@@ -30,8 +30,8 @@ AlarmManager.setExactAndAllowWhileIdle ──▶ AlarmReceiver ──▶ RingAct
 
 RingActivity ──▶ AudioRecord @16 kHz mono (UNPROCESSED source)
              ──▶ YAMNet ONNX (ONNX Runtime, on-device)
-             ──▶ 14 bird classes (Bird, Bird vocalization, Chirp/tweet, Owl,
-                  Rooster, Cuckoo, Pigeon…) — frame evidence ≥ 0.15
+             ──▶ 13 bird classes (Bird, Bird vocalization, Chirp/tweet, Owl,
+                  Rooster, Crow, Pigeon…) — frame evidence ≥ 0.15
              ──▶ 6 s of bird evidence accumulated ──▶ alarm stops
                                                       └─▶ dawn census → SQLite
 ```

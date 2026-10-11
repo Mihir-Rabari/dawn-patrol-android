@@ -11,14 +11,15 @@ verification, app code, build pipeline) was done by an AI agent
 - **T+0:00** — Picked the lane: the challenge's #1 suggested idea (bird call
   identifier with no signal) with a twist — the *forcing function*: an alarm
   you can only dismiss outside.
-- **T+0:20** — YAMNet chosen: 4MB open-weight (Apache-2.0, Google Research),
-  521 AudioSet classes, raw-waveform ONNX exports available. Python probe:
+- **T+0:20** — YAMNet chosen: open-weight (Apache-2.0, Google Research),
+  3.7M parameters / 16 MB fp32 ONNX, 521 AudioSet classes, raw-waveform
+  exports available. Python probe:
   synthetic chirp → Bird 0.225; white noise → 0.005 max. Discrimination real.
-- **T+0:40** — Bird-class index built: 14 classes of 521 (Bird, Bird
-  vocalization, Chirp/tweet, Owl, Rooster, Crow, Pigeon, Duck, Goose, Turkey,
-  Chicken, Squawk, Bird flight). Deliberately EXCLUDED "Chirp tone" — the
-  electronic-chirp class — because the app's own alarm sound would otherwise
-  be able to verify itself.
+- **T+0:40** — Bird-class index built: 14 candidate classes of 521; one —
+  "Chirp tone", the *electronic*-chirp class — deliberately EXCLUDED because
+  the app's own alarm sound would otherwise be able to verify itself.
+  **13 classes ship**: Bird, Bird vocalization, Chirp/tweet, Owl, Rooster,
+  Crow, Pigeon, Duck, Goose, Turkey, Chicken, Squawk, Bird flight.
 - **T+0:45** — Thresholds tuned on real audio: a CC BY-SA Wikimedia dawn-chorus
   recording scores **Bird 0.999**; speech-mumble → 0.000 ("Busy signal" 😄);
   white noise → 0.005; silence → 0.000. Rule: frame max bird-class score
